@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_mavenexample" default="compile.module.mavenexample">
+  <dirname property="module.mavenexample.basedir" file="${ant.file.module_mavenexample}"/>
+  
+  <property name="module.jdk.home.mavenexample" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.mavenexample" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.mavenexample" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.mavenexample" value="-encoding UTF-8 -source 1.5 -target 1.5 ${compiler.args}"/>
+  
+  <property name="mavenexample.output.dir" value="${module.mavenexample.basedir}/target/classes"/>
+  <property name="mavenexample.testoutput.dir" value="${module.mavenexample.basedir}/target/test-classes"/>
+  
+  <path id="mavenexample.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="mavenexample.module.production.classpath">
+    <path refid="${module.jdk.classpath.mavenexample}"/>
+  </path>
+  
+  <path id="mavenexample.runtime.production.module.classpath">
+    <pathelement location="${mavenexample.output.dir}"/>
+  </path>
+  
+  <path id="mavenexample.module.classpath">
+    <path refid="${module.jdk.classpath.mavenexample}"/>
+    <pathelement location="${mavenexample.output.dir}"/>
+    <path refid="library.maven:_junit:junit:4.12.classpath"/>
+    <path refid="library.maven:_org.hamcrest:hamcrest-core:1.3.classpath"/>
+  </path>
+  
+  <path id="mavenexample.runtime.module.classpath">
+    <pathelement location="${mavenexample.testoutput.dir}"/>
+    <pathelement location="${mavenexample.output.dir}"/>
+    <path refid="library.maven:_junit:junit:4.12.classpath"/>
+    <path refid="library.maven:_org.hamcrest:hamcrest-core:1.3.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.mavenexample">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.mavenexample">
+    <patternset refid="excluded.from.module.mavenexample"/>
+  </patternset>
+  
+  <path id="mavenexample.module.sourcepath">
+    <dirset dir="${module.mavenexample.basedir}">
+      <include name="src/main/java"/>
+      <include name="src/main/resources"/>
+    </dirset>
+  </path>
+  
+  <path id="mavenexample.module.test.sourcepath">
+    <dirset dir="${module.mavenexample.basedir}">
+      <include name="src/test/java"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.mavenexample" depends="compile.module.mavenexample.production,compile.module.mavenexample.tests" description="Compile module MavenExample"/>
+  
+  <target name="compile.module.mavenexample.production" depends="register.custom.compilers" description="Compile module MavenExample; production classes">
+    <mkdir dir="${mavenexample.output.dir}"/>
+    <javac2 destdir="${mavenexample.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.mavenexample}/javac">
+      <compilerarg line="${compiler.args.mavenexample}"/>
+      <bootclasspath refid="mavenexample.module.bootclasspath"/>
+      <classpath refid="mavenexample.module.production.classpath"/>
+      <src refid="mavenexample.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.mavenexample"/>
+    </javac2>
+    
+    <copy todir="${mavenexample.output.dir}">
+      <fileset dir="${module.mavenexample.basedir}/src/main/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.mavenexample.basedir}/src/main/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.mavenexample.tests" depends="register.custom.compilers,compile.module.mavenexample.production" description="compile module MavenExample; test classes" unless="skip.tests">
+    <mkdir dir="${mavenexample.testoutput.dir}"/>
+    <javac2 destdir="${mavenexample.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.mavenexample}/javac">
+      <compilerarg line="${compiler.args.mavenexample}"/>
+      <bootclasspath refid="mavenexample.module.bootclasspath"/>
+      <classpath refid="mavenexample.module.classpath"/>
+      <src refid="mavenexample.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.mavenexample"/>
+    </javac2>
+    
+    <copy todir="${mavenexample.testoutput.dir}">
+      <fileset dir="${module.mavenexample.basedir}/src/test/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.mavenexample" description="cleanup module">
+    <delete dir="${mavenexample.output.dir}"/>
+    <delete dir="${mavenexample.testoutput.dir}"/>
+  </target>
+</project>
